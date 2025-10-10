@@ -58,12 +58,19 @@ import io.reactivex.schedulers.Schedulers;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 import retrofit2.HttpException;
 
+import io.flutter.embedding.android.FlutterActivity;
+import io.flutter.embedding.android.FlutterActivityLaunchConfigs;
+import io.flutter.embedding.engine.FlutterEngine;
+import io.flutter.embedding.engine.FlutterEngineCache;
+import io.flutter.embedding.engine.dart.DartExecutor;
+
 /**
  * * Home View for Easy Connect
  */
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, IMDNSDiscovery, IConfigurator, IScanResult {
 
     private String TAG = "MainActivity";
+    private static final String NPS_FLUTTER_ENGINE_NAME = "nps_flutter_engine_name";
     private ActivityMainBinding mBinding;
     private Context mContext;
     private LogcatListAdapter logcatListAdapter;
@@ -80,6 +87,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate");
         mContext = this;
+
+        warmupFlutterEngine();
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         mBinding.setHomeactivity(this);
@@ -137,6 +146,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             NSDDiscover.getInstance().stopServicediscovery(this);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        try {
+            FlutterEngineCache.getInstance().remove(NPS_FLUTTER_ENGINE_NAME);
+            Log.d(TAG, "Flutter engine cleaned up");
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to clean up Flutter engine", e);
+        }
+    }
+
+    private void warmupFlutterEngine() {
+        try {
+            FlutterEngine flutterEngine = new FlutterEngine(this);
+            flutterEngine.dartExecutor.executeDartEntrypoint(
+                DartExecutor.DartEntrypoint.createDefault()
+            );
+            FlutterEngineCache
+                .getInstance()
+                .put(NPS_FLUTTER_ENGINE_NAME, flutterEngine);
+            Log.d(TAG, "Flutter engine warmed up successfully");
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to warm up Flutter engine", e);
+        }
+    }
+
+    private void launchNPSFeedback() {
+        try {
+            startActivity(
+                FlutterActivity.withCachedEngine(NPS_FLUTTER_ENGINE_NAME)
+                    .backgroundMode(FlutterActivityLaunchConfigs.BackgroundMode.transparent)
+                    .build(this)
+            );
+            Log.d(TAG, "NPS feedback launched");
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to launch NPS feedback", e);
         }
     }
 
@@ -508,6 +551,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case 200:
                 writeTexttoFile(getResources().getString(R.string.message_success));
                 showDialog(this, message, false, getResources().getString(R.string.message_dpp_initiates), statuscode);
+                launchNPSFeedback();
                 return;
             case 307:
                 writeTexttoFile(getResources().getString(R.string.message_temporary_redirect));
