@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat;
 import com.easyconnect.easyconnectapp.R;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 /**
  * Util Class to check runtime permissions
@@ -25,7 +26,7 @@ public final class RuntimePermissionHelper {
     public static final String PERMISSION_ACCESS_FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     public static final String PERMISSION_CAMERA = Manifest.permission.CAMERA;
     private ArrayList<String> requiredPermissions;
-    private ArrayList<String> ungrantedPermissions = new ArrayList<String>();
+    private ArrayList<String> ungrantedPermissions = new ArrayList<>();
 
     private RuntimePermissionHelper(Activity activity)  {
         this.activity = activity;
@@ -39,7 +40,7 @@ public final class RuntimePermissionHelper {
     }
 
     private void initPermissions() {
-        requiredPermissions = new ArrayList<String>();
+        requiredPermissions = new ArrayList<>();
         requiredPermissions.add(PERMISSION_ACCESS_FINE_LOCATION);
         //Add all the required permission in the list
     }
@@ -48,12 +49,7 @@ public final class RuntimePermissionHelper {
         ungrantedPermissions = getUnGrantedPermissionsList();
         if(canShowPermissionRationaleDialog()){
             showMessageOKCancel(activity.getResources().getString(R.string.permission_message),
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            askPermissions();
-                        }
-                    });
+                    (dialog, which) -> askPermissions());
             return;
         }
         askPermissions();
@@ -62,12 +58,7 @@ public final class RuntimePermissionHelper {
     public void requestPermissionIfDenied(final String permission){
         if(canShowPermissionRationaleDialog(permission)){
             showMessageOKCancel(activity.getResources().getString(R.string.permission_message),
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            askPermission(permission);
-                        }
-                    });
+                    (dialog, which) -> askPermission(permission));
             return;
         }
         askPermission(permission);
@@ -78,23 +69,12 @@ public final class RuntimePermissionHelper {
     }
 
     public boolean canShowPermissionRationaleDialog() {
-        boolean shouldShowRationale = false;
-        for(String permission: ungrantedPermissions) {
-            boolean shouldShow = ActivityCompat.shouldShowRequestPermissionRationale(activity, permission);
-            if(shouldShow) {
-                shouldShowRationale = true;
-            }
-        }
-        return shouldShowRationale;
+        return ungrantedPermissions.stream()
+                .anyMatch(permission -> ActivityCompat.shouldShowRequestPermissionRationale(activity, permission));
     }
 
     public boolean canShowPermissionRationaleDialog(String permission) {
-        boolean shouldShowRationale = false;
-            boolean shouldShow = ActivityCompat.shouldShowRequestPermissionRationale(activity, permission);
-            if(shouldShow) {
-                shouldShowRationale = true;
-        }
-        return shouldShowRationale;
+        return ActivityCompat.shouldShowRequestPermissionRationale(activity, permission);
     }
 
     private void askPermissions() {
@@ -111,12 +91,9 @@ public final class RuntimePermissionHelper {
         new AlertDialog.Builder(activity)
                 .setMessage(message)
                 .setPositiveButton(R.string.ok, okListener)
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Toast.makeText(activity, R.string.permission_message, Toast.LENGTH_SHORT).show();
-                        activity.finish();
-                    }
+                .setNegativeButton(R.string.cancel, (dialogInterface, i) -> {
+                    Toast.makeText(activity, R.string.permission_message, Toast.LENGTH_SHORT).show();
+                    activity.finish();
                 })
                 .create()
                 .show();
@@ -124,33 +101,18 @@ public final class RuntimePermissionHelper {
 
 
     public boolean isAllPermissionAvailable() {
-        boolean isAllPermissionAvailable = true;
         initPermissions();
-        for(String permission : requiredPermissions){
-            if (ContextCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED){
-                isAllPermissionAvailable = false;
-                break;
-            }
-        }
-        return isAllPermissionAvailable;
+        return requiredPermissions.stream()
+                .allMatch(permission -> ContextCompat.checkSelfPermission(activity, permission) == PackageManager.PERMISSION_GRANTED);
     }
 
     public ArrayList<String> getUnGrantedPermissionsList() {
-        ArrayList<String> list = new ArrayList<String>();
-        for(String permission: requiredPermissions) {
-            int result = ActivityCompat.checkSelfPermission(activity, permission);
-            if(result != PackageManager.PERMISSION_GRANTED) {
-                list.add(permission);
-            }
-        }
-        return list;
+        return requiredPermissions.stream()
+                .filter(permission -> ActivityCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public boolean isPermissionAvailable(String permission) {
-        boolean isPermissionAvailable = true;
-            if (ContextCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED){
-                isPermissionAvailable = false;
-            }
-        return isPermissionAvailable;
+        return ContextCompat.checkSelfPermission(activity, permission) == PackageManager.PERMISSION_GRANTED;
     }
 }

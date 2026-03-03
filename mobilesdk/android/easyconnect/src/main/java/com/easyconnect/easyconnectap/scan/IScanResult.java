@@ -5,5 +5,5 @@ package com.easyconnect.easyconnectap.scan;
  */
 public interface IScanResult {
 
-    public void getScanResult(String dppUri);
+    void getScanResult(String dppUri);
 }
