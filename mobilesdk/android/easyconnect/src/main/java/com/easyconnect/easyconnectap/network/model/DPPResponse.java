@@ -2,7 +2,6 @@ package com.easyconnect.easyconnectap.network.model;
 
 import androidx.annotation.Nullable;
 
-import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 
 /**

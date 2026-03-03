@@ -1,8 +1,6 @@
 package com.easyconnect.easyconnectapp.app.view.viewmodel;
 
-import android.app.Activity;
 import android.app.Application;
-import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -13,7 +11,6 @@ import com.easyconnect.easyconnectap.instance.ProviderInstance;
 import com.easyconnect.easyconnectap.network.model.DPPResponse;
 import com.easyconnect.easyconnectap.network.model.DPPUri;
 import com.easyconnect.easyconnectap.network.repository.DPPRepository;
-import com.easyconnect.easyconnectap.util.RuntimePermissionHelper;
 import com.easyconnect.easyconnectap.util.SharedPrefsUtils;
 import com.easyconnect.easyconnectapp.app.R;
 import com.google.gson.Gson;
