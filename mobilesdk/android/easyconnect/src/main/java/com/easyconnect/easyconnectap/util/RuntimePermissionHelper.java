@@ -13,7 +13,6 @@ import androidx.core.content.ContextCompat;
 import com.easyconnect.easyconnectapp.R;
 
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 /**
  * Util Class to check runtime permissions
@@ -69,8 +68,12 @@ public final class RuntimePermissionHelper {
     }
 
     public boolean canShowPermissionRationaleDialog() {
-        return ungrantedPermissions.stream()
-                .anyMatch(permission -> ActivityCompat.shouldShowRequestPermissionRationale(activity, permission));
+        for (String permission : ungrantedPermissions) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean canShowPermissionRationaleDialog(String permission) {
@@ -102,14 +105,22 @@ public final class RuntimePermissionHelper {
 
     public boolean isAllPermissionAvailable() {
         initPermissions();
-        return requiredPermissions.stream()
-                .allMatch(permission -> ContextCompat.checkSelfPermission(activity, permission) == PackageManager.PERMISSION_GRANTED);
+        for (String permission : requiredPermissions) {
+            if (ContextCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public ArrayList<String> getUnGrantedPermissionsList() {
-        return requiredPermissions.stream()
-                .filter(permission -> ActivityCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED)
-                .collect(Collectors.toCollection(ArrayList::new));
+        ArrayList<String> list = new ArrayList<>();
+        for (String permission : requiredPermissions) {
+            if (ActivityCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED) {
+                list.add(permission);
+            }
+        }
+        return list;
     }
 
     public boolean isPermissionAvailable(String permission) {

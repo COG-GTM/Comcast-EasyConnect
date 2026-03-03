@@ -51,6 +51,5 @@ This project targets **Java 8** (`sourceCompatibility` and `targetCompatibility`
 
 - **Lambda expressions** for concise anonymous function implementations
 - **Method references** for cleaner callback code
-- **Streams API** for declarative collection processing
 - **Try-with-resources** for automatic resource management
 - **Diamond operator** (`<>`) for reduced type verbosity
