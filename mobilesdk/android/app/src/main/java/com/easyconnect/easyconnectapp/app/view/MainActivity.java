@@ -12,7 +12,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.net.nsd.NsdServiceInfo;
@@ -767,14 +766,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
 
-        //display the popup window
-        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-
-                Log.i("popup window", "Dismissing");
-            }
-        });
+        // Java 8: Replaced anonymous inner class with lambda expression
+        popupWindow.setOnDismissListener(() -> Log.i("popup window", "Dismissing"));
 
         textAddConfig.setOnClickListener(v -> {
 

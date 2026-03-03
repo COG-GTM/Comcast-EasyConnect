@@ -16,40 +16,34 @@ public class DPPRepositoryImpl implements DPPRepository {
         this.dppService = dppService;
     }
 
+    // Java 8: Simplified lambda expressions by removing redundant return statements
     @Override
     public Single<DPPResponse> getDPPResponse(JsonObject dppjson) {
-        return Single.defer(() -> {
-                return dppService.sendDPPUri(dppjson);
-        }).retryWhen(new HttpErrorRetryChecker());
+        return Single.defer(() -> dppService.sendDPPUri(dppjson))
+                .retryWhen(new HttpErrorRetryChecker());
     }
 
     @Override
     public Single<DPPResponse> getDPPResponse(String token, JsonObject dppJson) {
-        return Single.defer(() -> {
-            return dppService.sendDPPUri(token,dppJson);
-        }).retryWhen(new HttpErrorRetryChecker());
+        return Single.defer(() -> dppService.sendDPPUri(token, dppJson))
+                .retryWhen(new HttpErrorRetryChecker());
     }
 
     @Override
     public Single<DPPResponse> sendChallengeResponse(String challengeResponse, JsonObject dppJson) {
-        return  Single.defer(() -> {
-            return dppService.sendChallenge(challengeResponse,dppJson);
-        }).retryWhen(new HttpErrorRetryChecker());
+        return Single.defer(() -> dppService.sendChallenge(challengeResponse, dppJson))
+                .retryWhen(new HttpErrorRetryChecker());
     }
 
     @Override
     public Single<DPPUri> getDPPUri() {
-        return Single.defer(() -> {
-            return dppService.getDPPUrii();
-        }).retryWhen(new HttpErrorRetryChecker());
+        return Single.defer(() -> dppService.getDPPUrii())
+                .retryWhen(new HttpErrorRetryChecker());
     }
 
     @Override
     public Single<DPPUri> getDPPUri(String challengeResponse) {
-        return Single.defer(() -> {
-
-            return dppService.getDPPUrii(challengeResponse);
-
-        }).retryWhen(new HttpErrorRetryChecker());
+        return Single.defer(() -> dppService.getDPPUrii(challengeResponse))
+                .retryWhen(new HttpErrorRetryChecker());
     }
 }
