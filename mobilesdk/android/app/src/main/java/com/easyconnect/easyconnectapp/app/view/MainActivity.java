@@ -316,10 +316,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         consoleList = FileUtils.getInstance().readFromFile(context);
         mConsoleList.clear();
 
-        for (String message : consoleList) {
-
-            mConsoleList.add(message);
-        }
+        mConsoleList.addAll(consoleList);
         runOnUiThread(() -> {
             synchronized (logcatListAdapter) {
                 logcatListAdapter.notifyDataSetChanged();
@@ -768,13 +765,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         //display the popup window
-        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-
-                Log.i("popup window", "Dismissing");
-            }
-        });
+        popupWindow.setOnDismissListener(() -> Log.i("popup window", "Dismissing"));
 
         textAddConfig.setOnClickListener(v -> {
 

@@ -2,7 +2,6 @@ package com.easyconnect.easyconnectap.connection;
 
 import android.net.nsd.NsdServiceInfo;
 
-import java.io.FileOutputStream;
 import java.util.List;
 
 /**
@@ -10,5 +9,5 @@ import java.util.List;
  */
 public interface IMDNSDiscovery {
 
-    public void mDNSConfigList(List<NsdServiceInfo> mDnsConfigList);
+    void mDNSConfigList(List<NsdServiceInfo> mDnsConfigList);
 }
