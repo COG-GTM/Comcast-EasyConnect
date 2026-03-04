@@ -37,6 +37,6 @@ Reference kit includes an [iOS app](/mobilesdk/ios), an [android app](/mobilesdk
 The Android codebase leverages the following Java 8 language features (supported via desugaring / `sourceCompatibility 1.8`):
 - **Lambda expressions** for concise callback implementations (e.g., click listeners, interceptors, dialog handlers)
 - **Method references** for cleaner function passing
-- **Streams API** for declarative collection processing (filtering, matching, collecting)
 - **Try-with-resources** for automatic resource management in I/O operations
 - **`@FunctionalInterface`** annotations on single-method interfaces to enable lambda usage
+- **Diamond operator** for generic type inference
