@@ -9,10 +9,6 @@ import com.easyconnect.easyconnectap.util.Constants;
 import com.easyconnect.easyconnectap.util.SharedPrefsUtils;
 import com.easyconnect.easyconnectapp.R;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 

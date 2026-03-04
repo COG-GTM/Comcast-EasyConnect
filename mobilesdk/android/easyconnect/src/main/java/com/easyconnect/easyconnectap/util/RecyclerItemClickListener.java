@@ -13,8 +13,14 @@ import androidx.recyclerview.widget.RecyclerView;
 public class RecyclerItemClickListener implements RecyclerView.OnItemTouchListener {
 
     private OnItemClickListener mListener;
+
+    /**
+     * Functional interface for handling RecyclerView item clicks.
+     * Can be used as a lambda expression target in Java 8+.
+     */
+    @FunctionalInterface
     public interface OnItemClickListener {
-        public void onItemClick(View view, int position);
+        void onItemClick(View view, int position);
     }
     GestureDetector mGestureDetector;
     public RecyclerItemClickListener(Context context, OnItemClickListener listener) {

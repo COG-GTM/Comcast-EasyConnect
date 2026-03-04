@@ -1,13 +1,11 @@
 package com.easyconnect.easyconnectap.connection;
 
-import android.net.nsd.NsdServiceInfo;
-
-import java.util.List;
-
 /**
- * * @Interface to pass selected MDNS Configurator
+ * Functional interface to pass selected MDNS Configurator.
+ * Can be used as a lambda expression target in Java 8+.
  */
+@FunctionalInterface
 public interface IConfigurator {
 
-    public void getselectedConfigurator(Configurator configurator);
+    void getselectedConfigurator(Configurator configurator);
 }
