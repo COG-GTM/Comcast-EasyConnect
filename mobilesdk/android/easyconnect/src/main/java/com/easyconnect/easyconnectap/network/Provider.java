@@ -8,17 +8,10 @@ import com.easyconnect.easyconnectap.network.repositoryImpl.DPPRepositoryImpl;
 import com.easyconnect.easyconnectap.network.retrofit.DPPService;
 import com.easyconnect.easyconnectap.util.HttpTimeOut;
 import com.easyconnect.easyconnectapp.BuildConfig;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -79,20 +72,15 @@ public class Provider {
                         .readTimeout(HttpTimeOut.READ_TIME_OUT, TimeUnit.SECONDS)
                         .writeTimeout(HttpTimeOut.WRITE_TIME_OUT, TimeUnit.SECONDS)
                         .addInterceptor(logging)
-                        .addInterceptor
-                        (new Interceptor() {
-                            @Override
-                            public Response intercept(Chain chain) throws IOException {
+                        .addInterceptor(chain -> {
+                            Request originalRequest = chain.request();
 
-                                Request originalRequest = chain.request();
-
-                                Request newRequest = originalRequest.newBuilder()
-                                        .header("Accept","application/json")
-                                        .header("Content-Type","application/json")
-                                        .header("Cache-Control","no-cache")
-                                        .build();
-                                return chain.proceed(newRequest);
-                            }
+                            Request newRequest = originalRequest.newBuilder()
+                                    .header("Accept", "application/json")
+                                    .header("Content-Type", "application/json")
+                                    .header("Cache-Control", "no-cache")
+                                    .build();
+                            return chain.proceed(newRequest);
                         });
 
                 okHttpClient = builder.build();
