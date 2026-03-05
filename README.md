@@ -5,6 +5,12 @@ With Wi-Fi Easy Connect in place, consumers will be able to connect Wi-Fi device
  
 # EasyConnect Reference Kit
 Comcast has created a Reference Kit that can be used to demonstrate, understand and help implement Wi-Fi Easy Connect. This reference kit covers Easy Connect configurator discovery and bootstrap delegation to enable Wi-Fi onboarding of a new device using Wi-Fi Easy Connect, by simply scanning a QR code.
+
+## Prerequisites
+- **Java**: JDK 21 or higher
+- **Android SDK**: compileSdk 34, minSdk 23
+- **Gradle**: 8.5 or higher (included via Gradle wrapper)
+- **Android Gradle Plugin**: 8.2.2
  
 Setup requires 2 Raspberry Pis and a mobile app. One of the Pis will be configured as a Wi-Fi client (the enrollee) and the other will be configured as an AP (the configurator). A mobile app will be used to scan the QR code from the enrollee and send the bootstrap information to the configurator.
  

@@ -3,9 +3,9 @@ ext{
     root_versionsname="1"
 
     root_minsdkversion = 23
-    root_compilesdkversion = 28
-    root_targetsdkversion = 28
-    root_buildtoolsversion = '29.0.0'
+    root_compilesdkversion = 34
+    root_targetsdkversion = 34
+    root_buildtoolsversion = '34.0.0'
 
     appcompact='1.1.0'
     constraintlayout='1.1.3'
