@@ -22,7 +22,7 @@ public class QRCodeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qrcode);
 
-        ImageView qrImageview = (ImageView) findViewById(R.id.img_qrcode);
+        ImageView qrImageview = findViewById(R.id.img_qrcode);
 
         String dppURI = SharedPrefsUtils.getInstance().getStringPreference(this, getResources().getString(R.string.dpp_for_qrcode));
 

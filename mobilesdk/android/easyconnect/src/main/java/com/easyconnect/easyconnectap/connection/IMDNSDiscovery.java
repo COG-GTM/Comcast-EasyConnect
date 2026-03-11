@@ -2,7 +2,6 @@ package com.easyconnect.easyconnectap.connection;
 
 import android.net.nsd.NsdServiceInfo;
 
-import java.io.FileOutputStream;
 import java.util.List;
 
 /**

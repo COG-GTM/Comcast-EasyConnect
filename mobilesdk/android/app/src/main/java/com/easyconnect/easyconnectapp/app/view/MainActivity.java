@@ -316,10 +316,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         consoleList = FileUtils.getInstance().readFromFile(context);
         mConsoleList.clear();
 
-        for (String message : consoleList) {
-
-            mConsoleList.add(message);
-        }
+        mConsoleList.addAll(consoleList);
         runOnUiThread(() -> {
             synchronized (logcatListAdapter) {
                 logcatListAdapter.notifyDataSetChanged();
@@ -669,16 +666,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dialog.getWindow().setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.dialog_bg));
         dialog.setCancelable(false);
 
-        TextView textTitle = (TextView) dialog.findViewById(R.id.txt_title);
+        TextView textTitle = dialog.findViewById(R.id.txt_title);
         textTitle.setText(titile);
 
-        TextView textMessage = (TextView) dialog.findViewById(R.id.txt_message);
+        TextView textMessage = dialog.findViewById(R.id.txt_message);
         textMessage.setText(message);
 
-        EditText editText = (EditText) dialog.findViewById(R.id.edt_response);
+        EditText editText = dialog.findViewById(R.id.edt_response);
 
-        Button button_ok = (Button) dialog.findViewById(R.id.btn_ok);
-        Button button_cancel = (Button) dialog.findViewById(R.id.btn_cancel);
+        Button button_ok = dialog.findViewById(R.id.btn_ok);
+        Button button_cancel = dialog.findViewById(R.id.btn_cancel);
 
         if (statuscode == 401) {
 
@@ -759,22 +756,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         popupWindow.setOutsideTouchable(false);
         popupWindow.setFocusable(true);
 
-        TextView textAddConfig = (TextView) customView.findViewById(R.id.txt_add_configurator);
+        TextView textAddConfig = customView.findViewById(R.id.txt_add_configurator);
 
-        TextView textMdnsScan = (TextView) customView.findViewById(R.id.txt_mdns_scan);
+        TextView textMdnsScan = customView.findViewById(R.id.txt_mdns_scan);
 
-        TextView textGetUri = (TextView) customView.findViewById(R.id.txt_get_uri);
+        TextView textGetUri = customView.findViewById(R.id.txt_get_uri);
 
 
 
         //display the popup window
-        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-
-                Log.i("popup window", "Dismissing");
-            }
-        });
+        popupWindow.setOnDismissListener(() -> Log.i("popup window", "Dismissing"));
 
         textAddConfig.setOnClickListener(v -> {
 

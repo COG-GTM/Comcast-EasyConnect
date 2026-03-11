@@ -3,10 +3,7 @@ package com.easyconnect.easyconnectap.util;
 import android.content.Context;
 import android.util.Log;
 
-import androidx.lifecycle.MutableLiveData;
-
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,22 +51,15 @@ public class FileUtils {
     public List<String> readFromFile(Context context) {
 
         List<String> consoleList = new ArrayList<>();
-        try {
-            InputStream inputStream = context.openFileInput("console.txt");
+        try (InputStream inputStream = context.openFileInput("console.txt");
+             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+             BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
 
-            if (inputStream != null) {
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                String receiveString = "";
-                StringBuilder stringBuilder = new StringBuilder();
-
-                while ((receiveString = bufferedReader.readLine()) != null) {
-                    stringBuilder.append(receiveString);
-                    consoleList.add(receiveString);
-                }
-
-                inputStream.close();
+            String receiveString;
+            while ((receiveString = bufferedReader.readLine()) != null) {
+                consoleList.add(receiveString);
             }
+
         } catch (FileNotFoundException e) {
             Log.e("login activity", "File not found: " + e.toString());
         } catch (IOException e) {
