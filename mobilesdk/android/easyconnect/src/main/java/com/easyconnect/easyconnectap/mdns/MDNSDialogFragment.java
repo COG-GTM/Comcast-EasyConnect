@@ -70,7 +70,7 @@ public class MDNSDialogFragment extends AppCompatDialogFragment {
         getDialog().setCanceledOnTouchOutside(false);
 
         // Get field from view
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
+        mRecyclerView = view.findViewById(R.id.recyclerview);
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
 

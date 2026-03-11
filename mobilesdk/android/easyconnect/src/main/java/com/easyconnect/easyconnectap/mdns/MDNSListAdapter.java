@@ -48,7 +48,7 @@ public class MDNSListAdapter extends RecyclerView.Adapter<MDNSListAdapter.MyView
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            config_name = (TextView) itemView.findViewById(android.R.id.text1);
+            config_name = itemView.findViewById(android.R.id.text1);
         }
     }
 }

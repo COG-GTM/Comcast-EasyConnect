@@ -43,7 +43,7 @@ public class LogcatListAdapter extends RecyclerView.Adapter<LogcatListAdapter.My
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            configName = (TextView) itemView.findViewById(android.R.id.text1);
+            configName = itemView.findViewById(android.R.id.text1);
         }
     }
 }
