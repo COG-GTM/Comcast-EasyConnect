@@ -13,10 +13,28 @@ import com.easyconnect.easyconnectapp.app.R;
 
 
 /**
- * * Generate and Display QR Code from DPP URI
+ * Activity that displays the configurator's DPP URI as a scannable QR code.
+ *
+ * <p>Launched from {@link MainActivity} after the configurator's bootstrap URI has been
+ * successfully retrieved via {@code GET /api/v1/configurator-dpp-uri} and stored in
+ * {@link SharedPrefsUtils} under the {@code dpp_for_qrcode} key.
+ *
+ * <p>Uses {@link GenerateQRCode} to encode the DPP URI string into a 400x400 pixel
+ * QR code bitmap, which is rendered in an {@link ImageView}.
+ *
+ * @see MainActivity#getDPPUriFromServer()
+ * @see GenerateQRCode#getQRCodeFromDPP(String)
  */
 public class QRCodeActivity extends AppCompatActivity {
 
+    /**
+     * Retrieves the stored DPP URI from SharedPreferences and renders it as a QR code.
+     *
+     * <p>If the URI is {@code null} (e.g., cleared between activities), a toast error
+     * is shown instead of a QR code.
+     *
+     * @param savedInstanceState the previously saved instance state, or {@code null}
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -59,7 +59,31 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
 import retrofit2.HttpException;
 
 /**
- * * Home View for Easy Connect
+ * Primary Activity for the Wi-Fi Easy Connect Reference Kit application.
+ *
+ * <p>Orchestrates the full DPP (Device Provisioning Protocol) bootstrap delegation workflow:
+ * <ol>
+ *   <li>Discovers DPP configurators on the local network via mDNS ({@code _dpp._tcp})</li>
+ *   <li>Scans enrollee device QR codes to capture bootstrap DPP URIs</li>
+ *   <li>Sends the enrollee's DPP URI to the selected configurator via REST API</li>
+ *   <li>Handles challenge-response authentication when the configurator requires a passphrase</li>
+ *   <li>Retrieves the configurator's own DPP URI and displays it as a QR code</li>
+ * </ol>
+ *
+ * <p>Implements three callback interfaces to receive asynchronous results:
+ * <ul>
+ *   <li>{@link IMDNSDiscovery} &mdash; receives discovered configurator list after mDNS scan</li>
+ *   <li>{@link IConfigurator} &mdash; receives the resolved IP/port of a selected configurator</li>
+ *   <li>{@link IScanResult} &mdash; receives the scanned DPP URI from the QR code scanner</li>
+ * </ul>
+ *
+ * <p>Uses a console-style {@link RecyclerView} (backed by {@link LogcatListAdapter}) to display
+ * status messages for each step of the provisioning flow.
+ *
+ * @see MainActivityViewModel
+ * @see NSDDiscover
+ * @see ScanQRCode
+ * @see MDNSDialogFragment
  */
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, IMDNSDiscovery, IConfigurator, IScanResult {
 
@@ -67,8 +91,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ActivityMainBinding mBinding;
     private Context mContext;
     private LogcatListAdapter logcatListAdapter;
+
+    /** Guards against concurrent mDNS scans; {@code true} while a scan is in progress. */
     private boolean scanFlag = true;
+
+    /** Tracks whether the QR scanner camera view is currently visible. */
     private boolean qrScanFlag = false;
+
+    /** Backing list for the console RecyclerView displaying status messages. */
     private List<String> mConsoleList = new ArrayList<>();
     private ZXingScannerView mScannerView;
     private RuntimePermissionHelper runtimePermissionHelper;
@@ -327,8 +357,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    //Method to send dpp and other detials top server
-    //Getting response as DPPResponse model
+    /**
+     * Sends the scanned enrollee DPP URI to the configurator's REST API.
+     *
+     * <p>POSTs to {@code /api/v1/configurator-initiate-dpp} with the DPP URI as a JSON body.
+     * If a bearer token exists from a prior successful request, it is included as an
+     * {@code X-Authorization-Token} header. The response is handled via RxJava on the
+     * main thread.
+     *
+     * @param context the current context, used to retrieve SharedPreferences values
+     */
     private void sendUriToServer(Context context) {
 
         String dppUri = SharedPrefsUtils.getInstance().getStringPreference(context, getApplication().getResources().getString(com.easyconnect.easyconnectapp.R.string.mdns_dpp_uri));
@@ -400,6 +438,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    /**
+     * Processes a successful DPP initiation response by persisting the auth token
+     * (if present) and displaying the configurator's status message.
+     *
+     * @param dppResponse the parsed response from the configurator
+     */
     private void handleDppResponse(DPPResponse dppResponse) {
 
         if (dppResponse.getToken() != null) {
@@ -414,6 +458,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         displayMessageFromConfigurator(dppResponse);
     }
 
+    /**
+     * Parses an HTTP error from the DPP initiation endpoint into a
+     * {@link DPPResponse} and displays the error message to the user.
+     * Falls back to a generic server error dialog if parsing fails.
+     *
+     * @param e the throwable, expected to be an {@link HttpException}
+     */
     private void handleHttpException(Throwable e) {
         try {
             HttpException httpException = (HttpException) e;
@@ -482,6 +533,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    /**
+     * Parses an HTTP error from the DPP URI retrieval endpoint into a
+     * {@link DPPUri} and displays the error message. Falls back to a
+     * generic server error dialog if parsing fails.
+     *
+     * @param e the throwable, expected to be an {@link HttpException}
+     */
     private void handleDPPHttpException(Throwable e) {
         try {
             HttpException httpException = (HttpException) e;
@@ -714,6 +772,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //dialog.show();
     }
 
+    /**
+     * Routes a challenge-response based on context (DPP URI retrieval vs. DPP initiation)
+     * and the HTTP status code that triggered the challenge.
+     *
+     * <p>For status 401, sends the user-entered passphrase as a challenge response.
+     * For status 100, parses a manually entered {@code ip:port} string to configure
+     * the configurator endpoint.
+     *
+     * @param dppFlag    {@code true} if this challenge is for the DPP URI endpoint,
+     *                   {@code false} for the DPP initiation endpoint
+     * @param statuscode the HTTP status code that prompted the challenge dialog
+     * @param response   the user-entered text (passphrase or ip:port)
+     */
     private void handleChallengeResponse(boolean dppFlag, int statuscode, String response) {
 
         if (dppFlag) {

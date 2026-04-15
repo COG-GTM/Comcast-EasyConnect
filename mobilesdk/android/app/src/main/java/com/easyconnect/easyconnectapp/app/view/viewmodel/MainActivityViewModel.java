@@ -24,6 +24,25 @@ import retrofit2.HttpException;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
+/**
+ * ViewModel for {@link MainActivity} that manages network repository access
+ * and HTTP error parsing for the DPP provisioning flow.
+ *
+ * <p>Responsibilities:
+ * <ul>
+ *   <li>Constructs a {@link DPPRepository} configured with the configurator's
+ *       IP and port discovered via mDNS (stored in {@link SharedPrefsUtils})</li>
+ *   <li>Parses {@link HttpException} error bodies into {@link DPPResponse}
+ *       or {@link DPPUri} models for display by the Activity</li>
+ *   <li>Creates error-state response objects and clears stale auth tokens
+ *       when requests fail</li>
+ * </ul>
+ *
+ * <p>Survives configuration changes (e.g., screen rotation) as an {@link AndroidViewModel}.
+ *
+ * @see DPPRepository
+ * @see ProviderInstance
+ */
 public class MainActivityViewModel extends AndroidViewModel {
 
     private DPPRepository dppRepository = null;
@@ -32,6 +51,17 @@ public class MainActivityViewModel extends AndroidViewModel {
         super(application);
     }
 
+    /**
+     * Returns a {@link DPPRepository} configured with the base URL of the
+     * currently selected mDNS configurator.
+     *
+     * <p>Reads the configurator's IP and port from {@link SharedPrefsUtils},
+     * constructs an HTTP base URL ({@code http://<ip>:<port>/}), and obtains
+     * a repository instance via {@link ProviderInstance}. If the IP is not
+     * available (no configurator selected), shows a toast and returns {@code null}.
+     *
+     * @return the DPP repository, or {@code null} if no configurator is configured
+     */
     public DPPRepository getDppRepository() {
 
         try {
@@ -64,6 +94,13 @@ public class MainActivityViewModel extends AndroidViewModel {
         return dppRepository;
     }
 
+    /**
+     * Parses an {@link HttpException} from the DPP initiation endpoint into
+     * a {@link DPPResponse} containing the status code and error message.
+     *
+     * @param httpException the HTTP exception to parse
+     * @return the parsed response, or {@code null} if parsing fails
+     */
     public DPPResponse parseErrorResponse(HttpException httpException) {
 
         try {
@@ -84,6 +121,13 @@ public class MainActivityViewModel extends AndroidViewModel {
         return null;
     }
 
+    /**
+     * Parses an {@link HttpException} from the DPP URI endpoint into
+     * a {@link DPPUri} containing the status code and error message.
+     *
+     * @param httpException the HTTP exception to parse
+     * @return the parsed URI response, or {@code null} if parsing fails
+     */
     public DPPUri parseDPPErrorResponse(HttpException httpException) {
 
         try {
@@ -103,6 +147,14 @@ public class MainActivityViewModel extends AndroidViewModel {
         return null;
     }
 
+    /**
+     * Creates a {@link DPPResponse} representing an error state and clears
+     * the stored auth token.
+     *
+     * @param status  the HTTP status code
+     * @param message the error message to display
+     * @return a new {@link DPPResponse} with the given status and message
+     */
     public DPPResponse getDppResponse(int status,String message){
 
         //Creating DPPResponse object to set response details
@@ -116,6 +168,14 @@ public class MainActivityViewModel extends AndroidViewModel {
         return dppResponse;
     }
 
+    /**
+     * Creates a {@link DPPUri} representing an error state and clears
+     * the stored QR code URI.
+     *
+     * @param status  the HTTP status code
+     * @param message the error message to display
+     * @return a new {@link DPPUri} with the given status and message
+     */
     public DPPUri getDppUri(int status,String message){
 
         DPPUri dppUri = new DPPUri();

@@ -6,7 +6,23 @@ import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * POJO class for server response
+ * Data model for the configurator's DPP initiation response from
+ * {@code POST /api/v1/configurator-initiate-dpp}.
+ *
+ * <p>JSON structure:
+ * <pre>{@code
+ * {
+ *   "status":  "200",
+ *   "message": "DPP process initiated",
+ *   "token":   "eyJhbGciOiJIUzI1NiIs..."
+ * }
+ * }</pre>
+ *
+ * <p>The {@code token} field is nullable &mdash; present only on successful authentication.
+ * When present, it should be stored and sent as an {@code X-Authorization-Token} header
+ * in subsequent requests.
+ *
+ * @see DPPUri
  */
 public class DPPResponse {
 

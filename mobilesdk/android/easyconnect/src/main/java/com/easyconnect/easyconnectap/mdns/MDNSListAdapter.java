@@ -14,12 +14,27 @@ import com.easyconnect.easyconnectapp.R;
 import java.util.List;
 
 
+/**
+ * RecyclerView adapter that displays discovered mDNS configurator service names
+ * in the {@link MDNSDialogFragment} selection dialog.
+ *
+ * <p>Each row shows the {@link NsdServiceInfo#getServiceName()} of a discovered
+ * DPP configurator using a simple single-{@link android.widget.TextView} layout.
+ *
+ * @see MDNSDialogFragment
+ */
 public class MDNSListAdapter extends RecyclerView.Adapter<MDNSListAdapter.MyViewHolder> {
 
     private LayoutInflater inflater;
     Context mContext;
     private List<NsdServiceInfo> mDNSConfigList;
 
+    /**
+     * Creates a new adapter backed by the given list of discovered NSD services.
+     *
+     * @param context        the context used to obtain a {@link LayoutInflater}
+     * @param mdnsConfigList the list of discovered configurator services
+     */
     public MDNSListAdapter(Context context,List<NsdServiceInfo> mdnsConfigList) {
         inflater = LayoutInflater.from(context);
         this.mContext = context;
@@ -43,6 +58,7 @@ public class MDNSListAdapter extends RecyclerView.Adapter<MDNSListAdapter.MyView
         return mDNSConfigList.size();
     }
 
+    /** ViewHolder binding a configurator service name to a single TextView. */
     class MyViewHolder extends RecyclerView.ViewHolder {
         TextView config_name;
 

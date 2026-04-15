@@ -15,7 +15,19 @@ import com.easyconnect.easyconnectapp.R;
 import java.util.ArrayList;
 
 /**
- * Util Class to check runtime permissions
+ * Singleton helper that manages Android M+ runtime permission requests for the
+ * Easy Connect application.
+ *
+ * <p>Tracks required permissions (currently {@link android.Manifest.permission#ACCESS_FINE_LOCATION}),
+ * checks their grant status, and shows a rationale dialog before requesting if the
+ * system recommends it. If permissions are denied, displays a toast and finishes
+ * the activity.
+ *
+ * <p>Used by {@link com.easyconnect.easyconnectap.scan.ScanQRCode} to request
+ * camera permission and by the main activity for location permission (required
+ * for mDNS discovery on Android 8+).
+ *
+ * @see ScanQRCode
  */
 public final class RuntimePermissionHelper {
 
@@ -44,6 +56,10 @@ public final class RuntimePermissionHelper {
         //Add all the required permission in the list
     }
 
+    /**
+     * Requests all ungranted permissions, showing a rationale dialog first if
+     * the system recommends it.
+     */
     public void requestPermissionsIfDenied(){
         ungrantedPermissions = getUnGrantedPermissionsList();
         if(canShowPermissionRationaleDialog()){
@@ -59,6 +75,12 @@ public final class RuntimePermissionHelper {
         askPermissions();
     }
 
+    /**
+     * Requests a single permission, showing a rationale dialog first if
+     * the system recommends it.
+     *
+     * @param permission the Manifest permission string to request
+     */
     public void requestPermissionIfDenied(final String permission){
         if(canShowPermissionRationaleDialog(permission)){
             showMessageOKCancel(activity.getResources().getString(R.string.permission_message),
@@ -123,6 +145,11 @@ public final class RuntimePermissionHelper {
     }
 
 
+    /**
+     * Checks whether all required permissions are currently granted.
+     *
+     * @return {@code true} if every required permission is granted
+     */
     public boolean isAllPermissionAvailable() {
         boolean isAllPermissionAvailable = true;
         initPermissions();
@@ -146,6 +173,12 @@ public final class RuntimePermissionHelper {
         return list;
     }
 
+    /**
+     * Checks whether a specific permission is currently granted.
+     *
+     * @param permission the Manifest permission string to check
+     * @return {@code true} if the permission is granted
+     */
     public boolean isPermissionAvailable(String permission) {
         boolean isPermissionAvailable = true;
             if (ContextCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED){

@@ -24,14 +24,24 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/*
- * This Provider Class will provide the all repository objects.
- * To call the rest apis
+/**
+ * Provides lazily-initialized singleton instances of Retrofit, OkHttp, and
+ * {@link DPPRepository} for communicating with the DPP configurator's REST API.
  *
- * @param context
+ * <p>Uses double-checked locking to ensure thread-safe singleton creation of:
+ * <ul>
+ *   <li>{@link Retrofit} &mdash; configured with Gson converter and RxJava2 adapter</li>
+ *   <li>{@link OkHttpClient} &mdash; with JSON headers, configurable timeouts
+ *       ({@link HttpTimeOut}), and debug-level HTTP logging</li>
+ *   <li>{@link DPPRepository} &mdash; wrapping the Retrofit-generated {@link DPPService}</li>
+ * </ul>
+ *
+ * <p>Accessed via {@link ProviderInstance#getProvider()}.
+ *
+ * @see ProviderInstance
+ * @see DPPService
+ * @see HttpTimeOut
  */
-
-
 public class Provider {
     private volatile Retrofit retrofitInstance;
 
@@ -39,6 +49,13 @@ public class Provider {
     private volatile DPPRepository dppRepository;
 
 
+    /**
+     * Returns a lazily-created {@link Retrofit} instance configured with the
+     * given base URL, Gson converter, and RxJava2 call adapter.
+     *
+     * @param URL the configurator's base URL (e.g., {@code http://10.0.0.1:80/})
+     * @return the shared Retrofit instance
+     */
     public Retrofit getRetrofitInstance(String URL) {
         Retrofit result = retrofitInstance;
         Log.e("getRetrofitInstance","getRetrofitInstance creation");
@@ -62,6 +79,12 @@ public class Provider {
         return result;
     }
 
+    /**
+     * Returns a lazily-created {@link OkHttpClient} with standard JSON headers,
+     * configurable timeouts, and HTTP body logging in debug builds.
+     *
+     * @return the shared OkHttpClient instance
+     */
     public synchronized OkHttpClient getOkHttpClient() {
         Log.e("getOkHttpClient","getRetrofitInstance getOkHttpClient creation");
         try {
@@ -105,7 +128,13 @@ public class Provider {
     }
 
 
-     // Get the DppRepository object
+    /**
+     * Returns a lazily-created {@link DPPRepository} backed by a Retrofit service
+     * pointing at the given configurator URL.
+     *
+     * @param url the configurator's base URL
+     * @return the shared DPP repository instance
+     */
     public DPPRepository getDPPRepository(String url){
         DPPRepository result = dppRepository;
         if (result == null) {
