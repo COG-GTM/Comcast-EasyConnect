@@ -17,7 +17,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * NSD Device Discovery implementation
+ * Singleton that performs mDNS (Network Service Discovery) to locate DPP-capable
+ * configurators on the local network.
+ *
+ * <p>Discovers services advertised under the {@code _dpp._tcp} service type using
+ * Android's {@link NsdManager}. The discovery runs for a fixed 10-second window,
+ * after which the accumulated list of {@link NsdServiceInfo} results is delivered
+ * to the caller via the {@link IMDNSDiscovery} callback.
+ *
+ * <p>Also provides service resolution via {@link #getResolveListener(Context, NsdServiceInfo, IConfigurator)}
+ * to obtain the concrete IP address and port of a selected configurator.
+ *
+ * <p>Usage:
+ * <pre>{@code
+ * NSDDiscover.getInstance().DiscoverMDNSConfigurator(context, callback);
+ * }</pre>
+ *
+ * @see IMDNSDiscovery
+ * @see IConfigurator
+ * @see Constants#SERVICE_TYPE
  */
 public class NSDDiscover {
 
@@ -25,7 +43,10 @@ public class NSDDiscover {
     public String mDiscoveryServiceName = "EasyConnectNSDDiscover";
     private NsdManager mNsdManager;
 
+    /** Current state of the discovery scan (ON while scanning, OFF otherwise). */
     DISCOVERY_STATUS mCurrentDiscoveryStatus = DISCOVERY_STATUS.OFF;
+
+    /** Accumulates discovered NSD services during a scan window. */
     private List<NsdServiceInfo> mDNSServiceInfoList = new ArrayList<>();
     private IMDNSDiscovery iMDNSDiscovery;
     private static NSDDiscover nsdDiscover;
@@ -137,6 +158,12 @@ public class NSDDiscover {
         }
     };
 
+    /**
+     * Stops any active mDNS service discovery. Called from {@code Activity.onDestroy()}
+     * to release system resources.
+     *
+     * @param context the context used to obtain the {@link NsdManager}
+     */
     public void stopServicediscovery(Context context) {
 
         getNsdManager(context).stopServiceDiscovery(mDiscoveryListener);

@@ -4,7 +4,22 @@ import androidx.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 /**
- * POJO Class for getting DPP URI
+ * Data model for the configurator's DPP URI response from
+ * {@code GET /api/v1/configurator-dpp-uri}.
+ *
+ * <p>JSON structure:
+ * <pre>{@code
+ * {
+ *   "status":  "200",
+ *   "message": "Success",
+ *   "dpp_uri": "DPP:C:81/1;M:00:c0:ca:97:64:ca;K:MDkw..."
+ * }
+ * }</pre>
+ *
+ * <p>The {@code dpp_uri} field is nullable &mdash; it is only present on success (200).
+ * On error, {@code status} and {@code message} describe the failure.
+ *
+ * @see DPPResponse
  */
 public class DPPUri {
 

@@ -23,6 +23,23 @@ import com.easyconnect.easyconnectapp.R;
 
 import java.util.List;
 
+/**
+ * Full-screen dialog fragment that displays a list of discovered DPP configurators
+ * found via mDNS, allowing the user to select one.
+ *
+ * <p>Shown by {@link com.easyconnect.easyconnectapp.app.view.MainActivity#mDNSConfigList}
+ * when multiple configurators are discovered. Presents a {@link RecyclerView} of
+ * service names using {@link MDNSListAdapter}. When an item is tapped, the selected
+ * {@link android.net.nsd.NsdServiceInfo} is resolved to an IP/port via
+ * {@link com.easyconnect.easyconnectap.connection.NSDDiscover#getResolveListener},
+ * and the dialog is dismissed.
+ *
+ * <p>Must be created via the {@link #newInstance} factory method to avoid issues
+ * with fragment re-creation by the Android framework.
+ *
+ * @see MDNSListAdapter
+ * @see com.easyconnect.easyconnectap.connection.NSDDiscover
+ */
 public class MDNSDialogFragment extends AppCompatDialogFragment {
 
     private RecyclerView mRecyclerView;
@@ -36,6 +53,14 @@ public class MDNSDialogFragment extends AppCompatDialogFragment {
         // Use `newInstance` instead as shown below
     }
 
+    /**
+     * Factory method to create a new dialog fragment with the required dependencies.
+     *
+     * @param context            the host activity context
+     * @param imdnsDialog        callback to receive the selected configurator
+     * @param nsdServiceInfoList the list of discovered mDNS services to display
+     * @return a new MDNSDialogFragment instance
+     */
     public static MDNSDialogFragment newInstance(Context context, IConfigurator imdnsDialog, List<NsdServiceInfo> nsdServiceInfoList) {
         MDNSDialogFragment frag = new MDNSDialogFragment();
         frag.mContext = context;

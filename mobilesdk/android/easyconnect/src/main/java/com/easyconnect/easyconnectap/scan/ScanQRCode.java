@@ -22,9 +22,25 @@ import com.easyconnect.easyconnectap.util.SharedPrefsUtils;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
-/*** QR Code Scan Implimentation
+/**
+ * Singleton that manages QR code scanning using the ZXing barcode library.
+ *
+ * <p>Handles the complete QR scan lifecycle:
+ * <ol>
+ *   <li>Checks (and requests) camera runtime permissions via {@link RuntimePermissionHelper}</li>
+ *   <li>Starts the camera preview on the provided {@link ZXingScannerView}</li>
+ *   <li>Decodes the first detected QR code into a DPP URI string</li>
+ *   <li>Persists the scanned URI to {@link SharedPrefsUtils} and delivers it
+ *       to the caller via {@link IScanResult#getScanResult(String)}</li>
+ * </ol>
+ *
+ * <p>If the camera permission is denied more than twice, the user is redirected
+ * to the application's system settings page.
+ *
+ * @see IScanResult
+ * @see GenerateQRCode
+ * @see RuntimePermissionHelper
  */
-
 public class ScanQRCode implements ZXingScannerView.ResultHandler, ActivityCompat.OnRequestPermissionsResultCallback {
 
     private Context mContext;
@@ -45,7 +61,16 @@ public class ScanQRCode implements ZXingScannerView.ResultHandler, ActivityCompa
         return scanQRCode;
     }
 
-    //Scan QR Code
+    /**
+     * Entry point to initiate a QR code scan.
+     *
+     * <p>Stores references to the scanner view, hosting activity, and callback,
+     * then checks for camera permission before starting the camera.
+     *
+     * @param scannerView the ZXing scanner view embedded in the activity layout
+     * @param activity    the hosting activity (needed for permission requests)
+     * @param scanResult  callback to receive the decoded DPP URI string
+     */
     public void scanQRCodeToGetUri(ZXingScannerView scannerView, Activity activity, IScanResult scanResult) {
 
         mScannerView = scannerView;
@@ -120,6 +145,14 @@ public class ScanQRCode implements ZXingScannerView.ResultHandler, ActivityCompa
         count++;
     }
 
+    /**
+     * Called by ZXing when a QR code is successfully decoded.
+     *
+     * <p>Stops the camera, persists the scanned DPP URI to SharedPreferences,
+     * and delivers it to the registered {@link IScanResult} callback.
+     *
+     * @param result the decoded barcode result containing the DPP URI
+     */
     @Override
     public void handleResult(Result result) {
 

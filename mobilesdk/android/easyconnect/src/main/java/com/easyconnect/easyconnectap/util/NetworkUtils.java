@@ -9,7 +9,14 @@ import android.telephony.TelephonyManager;
 import androidx.annotation.RequiresPermission;
 
 /**
- * The type Network utils.
+ * Utility class for querying network connectivity state and speed.
+ *
+ * <p>Provides static methods to check whether the device has an active network
+ * connection, whether it is Wi-Fi or mobile, and whether the mobile connection
+ * is considered "fast" based on its subtype (e.g., LTE, HSDPA, EDGE).
+ *
+ * <p>All connectivity methods require {@link android.Manifest.permission#ACCESS_NETWORK_STATE}.
+ * This class cannot be instantiated.
  */
 public class NetworkUtils {
 

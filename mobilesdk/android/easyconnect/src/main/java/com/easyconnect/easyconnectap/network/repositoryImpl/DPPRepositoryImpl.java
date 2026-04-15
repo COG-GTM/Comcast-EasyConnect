@@ -8,10 +8,27 @@ import com.easyconnect.easyconnectap.network.retrofit.DPPService;
 import com.google.gson.JsonObject;
 import io.reactivex.Single;
 
+/**
+ * Concrete implementation of {@link DPPRepository} backed by Retrofit's {@link DPPService}.
+ *
+ * <p>Each repository method wraps the corresponding Retrofit call in a deferred
+ * {@link Single} and applies an {@link HttpErrorRetryChecker} that automatically
+ * retries on HTTP 401 (Unauthorized) up to 3 times before propagating the error.
+ *
+ * <p>Instantiated by {@link com.easyconnect.easyconnectap.network.Provider#getDPPRepository(String)}
+ * with a {@link DPPService} created from the configurator's base URL.
+ *
+ * @see DPPRepository
+ * @see DPPService
+ * @see HttpErrorRetryChecker
+ */
 public class DPPRepositoryImpl implements DPPRepository {
 
     private DPPService dppService;
 
+    /**
+     * @param dppService the Retrofit service interface for DPP API calls
+     */
     public DPPRepositoryImpl(DPPService dppService) {
         this.dppService = dppService;
     }

@@ -10,7 +10,11 @@ import android.text.TextUtils;
 final public class SharedPrefsUtils {
 
     private static SharedPrefsUtils sharedPrefsUtils;
+
+    /** SharedPreferences file name for general app settings (mDNS IP, port, etc.). */
     private String easyconnectTAG = "Easyconnect";
+
+    /** Separate SharedPreferences file for DPP-specific values (auth token, boolean flags). */
     private String easyConnectDPPTAG = "Easyconnect_dpp";
 
 
