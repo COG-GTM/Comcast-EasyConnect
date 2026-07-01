@@ -497,11 +497,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     /**
+     * Safely parse a status code received from the configurator. An untrusted
+     * configurator may return a non-numeric or missing status; return -1 in
+     * that case so the caller falls through to the default error handling
+     * instead of crashing with a NumberFormatException.
+     */
+    private static int parseStatusCode(String status) {
+
+        if (status == null) {
+            return -1;
+        }
+        try {
+            return Integer.parseInt(status.trim());
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
+
+    /**
      * To display dialog based on the server response
      */
     private void displayMessageFromConfigurator(DPPResponse dppResponse) {
 
-        int statuscode = Integer.parseInt((dppResponse.getStatus()));
+        int statuscode = parseStatusCode(dppResponse.getStatus());
         String message = dppResponse.getMessage();
 
         switch (statuscode) {
@@ -540,7 +558,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void displayMessageDPPURI(DPPUri dppUri) {
 
-        int statuscode = Integer.parseInt((dppUri.getStatus()));
+        int statuscode = parseStatusCode(dppUri.getStatus());
         String message = dppUri.getMessage();
 
         switch (statuscode) {

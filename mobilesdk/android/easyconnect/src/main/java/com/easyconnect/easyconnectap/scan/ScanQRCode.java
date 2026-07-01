@@ -123,7 +123,6 @@ public class ScanQRCode implements ZXingScannerView.ResultHandler, ActivityCompa
     @Override
     public void handleResult(Result result) {
 
-        Log.d(TAG,"ScanResult: "+result.toString());
         mScannerView.stopCamera();
         //Storing scan result in SharedPrefs
         SharedPrefsUtils.getInstance().setStringPreference(mContext, mContext.getResources().getString(R.string.mdns_dpp_uri), result.toString());

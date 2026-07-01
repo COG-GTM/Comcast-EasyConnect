@@ -131,10 +131,8 @@ class ViewController: UIViewController,serviceResultDelegate,discoveryDelegate {
 
             let usecase1url = "\(GlobalData.sharedManager.http_url)\(Constants.CONFIGURE_URL)"
             
-            if let token = KeychainWrapper.standard.string(forKey: Constants.TOKEN) {
-                
-            print("token", token)
-                
+            if KeychainWrapper.standard.string(forKey: Constants.TOKEN) != nil {
+
             sendUriToServer(inputParam: parameters, weburl: usecase1url, header: APIManager.tokenHeaders())
             } else {
                 
@@ -233,17 +231,6 @@ class ViewController: UIViewController,serviceResultDelegate,discoveryDelegate {
             textLog.write("No configurators detected. Please ensure configurator is on and click 'Scan for Configurator' from the settings menu \n")
             
             commonObj.presentAlertWithInputBox(withTitle:  Constants.ERROR_MESSAGE, message: Constants.MANUAL_CONFIGURATOR, presentedOnViewController:self )
-        }
-        else if(serviceDiscovery.count == 1)
-        {
-            let usecase2url = "\(GlobalData.sharedManager.http_url)\(Constants.CONFIGURE_URL_USE_CASE2)"
-            
-            if (GlobalData.sharedManager.manual_MDN_Selection == false)
-            {
-                let networkObject = NetworkDataParser()
-                networkObject.serviceResponseDelegate = self
-                networkObject.getQRCodeURI(weburl: usecase2url)
-            }
         }
         else
         {

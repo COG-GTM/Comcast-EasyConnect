@@ -40,8 +40,6 @@ public class MainActivityViewModel extends AndroidViewModel {
 
             String URL = getApplication().getResources().getString(R.string.http) + dnsIp + ":" + dnsPort + "/";
 
-            Log.d("URL", URL);
-
             if (dnsIp != null) {
 
                 dppRepository = ProviderInstance.getProvider().getDPPRepository(URL);
@@ -55,8 +53,6 @@ public class MainActivityViewModel extends AndroidViewModel {
 
         } catch (Exception e) {
             e.printStackTrace();
-
-            Log.d(TAG, "DPPResponse body " + e.getMessage());
 
             Toast.makeText(getApplication(), "Unable to send to server, Please try again", Toast.LENGTH_SHORT).show();
         }
