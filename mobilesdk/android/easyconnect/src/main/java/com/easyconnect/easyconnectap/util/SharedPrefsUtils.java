@@ -2,11 +2,13 @@ package com.easyconnect.easyconnectap.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.text.TextUtils;
 
 import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKeys;
 
+import java.io.File;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
@@ -37,18 +39,45 @@ final public class SharedPrefsUtils {
      * Builds an {@link EncryptedSharedPreferences} instance backed by an AES-256
      * master key from the Android Keystore, so both keys and values are encrypted
      * at rest.
+     *
+     * A user upgrading from a build that stored these preferences in plaintext (or
+     * whose keyset can no longer be decrypted) has an existing file that cannot be
+     * opened as encrypted data. Rather than crashing, discard that unreadable file
+     * and retry once; any stale value is re-established on the next onboarding.
      */
     private SharedPreferences getEncryptedPreferences(Context context, String name) {
         try {
-            String masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC);
-            return EncryptedSharedPreferences.create(
-                    name,
-                    masterKeyAlias,
-                    context,
-                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM);
+            return createEncryptedPreferences(context, name);
         } catch (GeneralSecurityException | IOException e) {
-            throw new IllegalStateException("Unable to create encrypted shared preferences", e);
+            deleteSharedPreferencesFile(context, name);
+            try {
+                return createEncryptedPreferences(context, name);
+            } catch (GeneralSecurityException | IOException retryError) {
+                throw new IllegalStateException("Unable to create encrypted shared preferences", retryError);
+            }
+        }
+    }
+
+    private SharedPreferences createEncryptedPreferences(Context context, String name)
+            throws GeneralSecurityException, IOException {
+        String masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC);
+        return EncryptedSharedPreferences.create(
+                name,
+                masterKeyAlias,
+                context,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM);
+    }
+
+    private void deleteSharedPreferencesFile(Context context, String name) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            context.deleteSharedPreferences(name);
+        } else {
+            context.getSharedPreferences(name, Context.MODE_PRIVATE).edit().clear().commit();
+            File prefsFile = new File(context.getApplicationInfo().dataDir + "/shared_prefs/" + name + ".xml");
+            if (prefsFile.exists()) {
+                prefsFile.delete();
+            }
         }
     }
 
