@@ -38,6 +38,9 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$rootProject.ext.espresso_core"
     implementation "androidx.recyclerview:recyclerview:$recyclerview_version"
 
+    //Encrypted storage for sensitive data at rest
+    implementation "androidx.security:security-crypto:1.0.0"
+
     //Live Data dependency
     implementation 'android.arch.lifecycle:extensions:' + rootProject.ext.archLifecycleVersion
     annotationProcessor 'android.arch.lifecycle:compiler:' + rootProject.ext.archLifecycleVersion

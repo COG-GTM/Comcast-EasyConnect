@@ -122,10 +122,7 @@ extension NetserviceDiscovery: NetServiceDelegate {
             }
         }
         let ipAddress = String(cString: hostname)
-        
-        print("ipAddress", ipAddress)
-        print("port", sender.port)
-        
+
         GlobalData.sharedManager.ipAddress = ipAddress
         GlobalData.sharedManager.portNumber = String(sender.port)
         

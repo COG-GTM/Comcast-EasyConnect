@@ -56,7 +56,6 @@ class NetworkDataParser: NSObject {
                                     
                                     self.serviceResponseDelegate?.showErrorMessage(title: Constants.SUCCESS_MESSAGE,
                                                                                    subTitle: "Received access point DPP URI successfully")
-                                    print(json)
                                 }
                             } else  if statusCode ==  Constants.ERROR_CODE_307 {
                                 self.textLog.write("Received error 'Temporary redirect' from configurator with Status code 307 \n")
@@ -74,7 +73,9 @@ class NetworkDataParser: NSObject {
                                 NotificationCenter.default.post(name: .ReloadUI_notification, object: nil)
                                 
                                 if let  itemJson = response.result.value as? [String: Any] {
-                                    self.serviceResponseDelegate?.serviceResponse(message: itemJson[Constants.MESSAGE] as! String, whichCase: "useCase2")
+                                    if let detailMessage = itemJson[Constants.MESSAGE] as? String {
+                                        self.serviceResponseDelegate?.serviceResponse(message: detailMessage, whichCase: "useCase2")
+                                    }
                                 }
                             } else  if statusCode ==  Constants.ERROR_CODE_404 {
                                 
@@ -115,9 +116,6 @@ class NetworkDataParser: NSObject {
                             
                         case .success(let json):
                             
-                            DispatchQueue.main.async {
-                                print("success",json)
-                            }
                             if statusCode == Constants.ERROR_CODE_200 {
                                 
                                 if let  itemJson = response.result.value as? [String: Any] {
@@ -192,9 +190,6 @@ class NetworkDataParser: NSObject {
                             
                         case .failure(let error):
                             
-                            DispatchQueue.main.async {
-                                print("failure",error)
-                            }
                             if statusCode ==  Constants.ERROR_CODE_307 {
                                 
                                 self.textLog.write("Received error 'Temporary redirect' from configurator with Status code 307\n")
@@ -222,7 +217,9 @@ class NetworkDataParser: NSObject {
                                 if let  itemJson = response.result.value as? [String: Any] {
                                     
                                     KeychainWrapper.standard.removeObject(forKey: Constants.TOKEN)
-                                    self.serviceResponseDelegate?.serviceResponse(message: itemJson[Constants.MESSAGE] as! String, whichCase: "useCase1")
+                                    if let detailMessage = itemJson[Constants.MESSAGE] as? String {
+                                        self.serviceResponseDelegate?.serviceResponse(message: detailMessage, whichCase: "useCase1")
+                                    }
                                 }
                             } else if statusCode == Constants.ERROR_CODE_500 {
                                 
